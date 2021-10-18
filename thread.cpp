@@ -90,6 +90,8 @@ void Process_input::run(){
             Command sub_command(i, new_end, total_rows, partition_rows,
                                 column, command_number, op);
             this->queue->push(std::move(sub_command)); 
+
+            // Mover los usos de la c_v al monitor de la queue
             this->c_v->notify_all();
         } 
         command_number++;
@@ -97,7 +99,8 @@ void Process_input::run(){
         line = NULL;
         characters_read = getline(&line, &size, stdin);
     }
-    for (i = 0; i < workers; i++){
+    for (i = 0; i < workers; i++) {
+        // std::string
         char end_op[5] = "done";
         Command end_command(-1, 0, 0, 0,
                             0, 0, end_op);
@@ -119,10 +122,12 @@ Process_commands::Process_commands(SAC& split_apply_combine,
                     c_v(c_v), m(m){}
 
 
-void Process_commands::run(){
+void Process_commands::run() {
+    // este mutex también debería estar adentro del monitor que protege a la queue, no?
     std::unique_lock<std::mutex> lock(*this->m);
     while (!*this->finished){
         while (this->queue->empty()){
+            // Y si te marcan que no hay más elementos?
             this->c_v->wait(lock);
         }
         while (!this->queue->empty()){

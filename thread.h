@@ -35,6 +35,8 @@ class Thread {
         Thread& operator=(Thread&& other);
 };
 
+
+// Mover estas clases a sus propios archivos.
 class Command_queue{
     private:
     std::deque<Command>* queue;
@@ -60,7 +62,8 @@ class Command_queue{
     Command_queue& operator=(const Command_queue &other) = delete;
 }; 
 
-class Process_input : public Thread{
+// Fijate que en el informe tenés las flechas de las herencias apuntando para el otro lado.
+class Process_input : public Thread {
     private:
     Command_queue* queue;
     bool* no_more_input;
@@ -74,7 +77,7 @@ class Process_input : public Thread{
     virtual void run() override;
 };
 
-class Process_commands : public Thread{
+class Process_commands : public Thread {
     private:
     SAC& split_apply_combine;
     Command_queue* queue;

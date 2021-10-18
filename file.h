@@ -5,7 +5,11 @@
 #include <stdlib.h>
 #include <mutex>
 
+// Documentar la API de la clase.
+// Además, para qué esta abstracción en vez de usar std::fstream?
+
 class File{
+    // Usar las abstracciones de C++ en vez de las de C
     FILE* fd;
     std::mutex m;
     public:

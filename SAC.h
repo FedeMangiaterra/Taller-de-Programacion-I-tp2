@@ -8,24 +8,26 @@
 #include "result.h"
 
 
-class SAC{ //(Split-Apply-Combine)
+class SAC { //(Split-Apply-Combine) <-- Ponele SplitApplyCombine a la clase!
     private:
     File& file;
     int columns;
     std::mutex m;
+
+    // Por qué un puntero a vector en vez de un vector?
     std::vector<Result*>* results;
 
     public:
     SAC(File& file, int columns);
 
     int get_max(int start, int finish, int rows, int column,
-                     int command_number);
+                int command_number);
 
     int get_min(int start, int finish, int rows, int column,
-                     int command_number);
+                int command_number);
 
     int sum(int start, int finish, int rows, int column,
-                     int command_number);
+            int command_number);
 
     int mean(int start, int finish, int rows, int column,
             int total_rows, int command_number);

@@ -28,13 +28,13 @@ int SAC::get_max(int start, int finish, int rows, int column,
     this->m.unlock();
     int size = rows*this->columns;
     int starting_position = start*this->columns*sizeof(u_int16_t);
-    u_int16_t* nums = (u_int16_t*)malloc(sizeof(u_int16_t)*size);
+
+    // Usar std::vector en vez de un malloc directo (y cuando se quiera usar memoria dinámica, usar new en vez de malloc)
+    u_int16_t* nums = (u_int16_t*) malloc(sizeof(u_int16_t)*size);
     size = this->file.seek_and_read(starting_position, SEEK_SET,
-                            nums, sizeof(u_int16_t), size);
-    Partition partition(rows, this->columns,
-                            start, size, nums);
-    uint16_t partition_max = partition.get_max(start, finish,
-                                                start, column);
+                                    nums, sizeof(u_int16_t), size);
+    Partition partition(rows, this->columns, start, size, nums);
+    uint16_t partition_max = partition.get_max(start, finish, start, column);
     this->results->at(command_number)->update_value(partition_max); 
 
     free(nums);
@@ -75,6 +75,7 @@ int SAC::get_min(int start, int finish, int rows, int column,
 
 int SAC::sum(int start, int finish, int rows, int column,
                      int command_number){
+    // Usar lock_guard en vez de lock+unlock
     this->m.lock();
     if (this->results->size() <= (size_t)command_number){
         this->results->resize(command_number + 1);
@@ -103,7 +104,8 @@ int SAC::sum(int start, int finish, int rows, int column,
 int SAC::mean(int start, int finish, int rows, int column,
                 int total_rows, int command_number){
     this->m.lock();
-    if (this->results->size() <= (size_t)command_number){
+    if (this->results->size() <= (size_t)command_number) {
+        // push_back en vez de resize+at
         this->results->resize(command_number + 1);
         this->results->at(command_number) = new Result_mean(total_rows);
     }

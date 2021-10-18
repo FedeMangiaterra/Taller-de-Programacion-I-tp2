@@ -12,22 +12,22 @@ Partition::Partition(int rows, int columns, int starting_row,
             columns(columns),
             starting_row(starting_row),
             size(size),
-            data((u_int16_t*)malloc(rows*columns*sizeof(u_int16_t))){
+            data((u_int16_t*)malloc(rows*columns*sizeof(u_int16_t))) {
                 size_t i;
-                for (i = 0; i < size; i++){
+                for (i = 0; i < size; i++) {
                     uint16_t num = htons(data[i]);
                     this->data[i] = num;
                 }
             }
 
 u_int16_t Partition::get_max(int start, int finish,
-                            int current_row, int column){
+                             int current_row, int column){
     uint16_t max = 0;
     size_t i;
     for (i = column;
-        i < this->size && current_row < finish;
-        i += this->columns){
-        if (current_row >= start && this->data[i] > max){
+         i < this->size && current_row < finish;
+         i += this->columns) {
+        if (current_row >= start && this->data[i] > max) {
             max = this->data[i];
         }
         current_row++;
@@ -36,15 +36,16 @@ u_int16_t Partition::get_max(int start, int finish,
 }
 
 u_int16_t Partition::get_min(int start, int finish,
-                            int current_row, int column){
+                             int current_row, int column){
     u_int16_t min = 65535;
     size_t i;
     for (i = column;
-        i < this->size && current_row < finish;
-        i += this->columns){
+         i < this->size && current_row < finish;
+         i += this->columns) {
         if (current_row >= start && this->data[i] < min){
             min = this->data[i];
         }
+        // Por qué esto no está en la tercera parte del for?
         current_row++;
     }
     return min;
@@ -54,16 +55,17 @@ u_int16_t Partition::sum(int start, int finish, int current_row, int column){
     u_int16_t sum = 0;
     size_t i;
     for (i = column;
-        i < this->size && current_row < finish;
-        i += this->columns){
+         i < this->size && current_row < finish;
+         i += this->columns){
         if (current_row >= start){
             sum += this->data[i];
         }
+        // Por qué esto no está en la tercera parte del for?
         current_row++;
     }
     return sum;
 }
     
-Partition::~Partition(){
+Partition::~Partition() {
     free(this->data);
 }
