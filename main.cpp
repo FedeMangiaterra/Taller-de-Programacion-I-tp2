@@ -13,13 +13,21 @@
 #define SUCCESS 0
 #define ERROR 1
 
-int main(int argc, char* argv[]){
+// Toda esta lógica del main tiene que ser repartida en las clases de tu diseno, sino es lógica global.
+int main(int argc, char* argv[]) {
     if (argc < 4) return ERROR;
     File f(argv[1], "rb");
+
+    // Estos bools son compartido por todos los threads y no están protegidos (std::atomic)
     bool no_more_input = false;
     bool finished = false;
+
+    // Si querés usar atoi, usá el de std, sino usá std::stringstream
     int workers_amount = atoi(argv[3]);
+
     Command_queue queue;
+
+    // Esta cond var debería ser parte del objeto monitor que protege a la queue
     std::condition_variable queue_condition_variable;
     SAC split_apply_combine(f, atoi(argv[2]));
     std::vector<Thread*> threads;
@@ -27,6 +35,8 @@ int main(int argc, char* argv[]){
                                         &no_more_input,
                                         &queue_condition_variable,
                                         workers_amount));
+
+    // Al igual que la cond var de arriba, este mutex tiene que ser parte de un monitor en vez de estar suelto en el main.
     std::mutex m;
     int i;
     for (i = 0; i < workers_amount; i++){
@@ -35,10 +45,14 @@ int main(int argc, char* argv[]){
                                         &queue_condition_variable,
                                         &m));
     }
-    for (i = 0; i <= workers_amount; i++){
+
+    // Estos <= en vez de < son hacks porque tu arreglo de hilos tiene un elemento más que workers_amount. No hagas eso,
+    // porque el que lo lee tiene que estar atento para darse cuenta de por qué lo hiciste y le va a resultar raro, este 
+    // tipo de prácticas es muy propenso a regresiones.
+    for (i = 0; i <= workers_amount; i++) {
         threads[i]->start();
     }
-    for (i = 0; i <= workers_amount; i++){
+    for (i = 0; i <= workers_amount; i++) {
         threads[i]->join();
         delete(threads[i]);
     }

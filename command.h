@@ -1,6 +1,9 @@
 #ifndef COMMAND_H
 #define COMMAND_H
 
+// Documentar la API de la clase.
+// Prohibir el constructor por copia y el operador asignación por copia
+
 class Command{
     private:
     int start_range;

@@ -11,7 +11,8 @@ void Result_sum::update_value(u_int16_t new_value){
     this->value += new_value;
 }
 
-void Result_sum::print(){
+void Result_sum::print() {
+    // Usar las abstracciones de C++, no las de C. Repasá todo el código corrigiendo esto porque sucede en varios lugares.
     printf("%d \n", this->value);
 }
 

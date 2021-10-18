@@ -9,6 +9,8 @@ class Partition{
     int columns;
     int starting_row;
     size_t size;
+
+    // Usá un std::vector para esto así no manejás el heap directamente.
     u_int16_t *data;
     public:
     Partition(int rows, int columns, int starting_row,
