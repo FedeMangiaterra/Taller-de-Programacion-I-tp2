@@ -8,9 +8,10 @@
 #include <thread>
 #include <deque>
 #include <mutex>
+#include <atomic>
 #include <condition_variable>
 #include "command.h"
-#include "SAC.h"
+#include "split_apply_combine.h"
 
 class Thread {
     private:
@@ -19,8 +20,11 @@ class Thread {
     public:
         Thread();
 
+        /*Lanza el thread. Llama al metodo run del
+        objeto activo que funcione en el thread*/
         void start();
 
+        /*Espera a que termine la ejecucion del thread.*/
         void join();
 
         virtual void run() = 0;
@@ -33,60 +37,6 @@ class Thread {
         Thread(Thread&& other);
 
         Thread& operator=(Thread&& other);
-};
-
-class Command_queue{
-    private:
-    std::deque<Command>* queue;
-    std::mutex m;
-
-    public:
-    Command_queue();
-
-    void push(Command command);
-
-    Command front();
-
-    Command front_and_pop();
-
-    size_t size();
-
-    bool empty();
-
-    ~Command_queue();
-
-    private:
-    Command_queue(const Command_queue& other) = delete;
-    Command_queue& operator=(const Command_queue &other) = delete;
-}; 
-
-class Process_input : public Thread{
-    private:
-    Command_queue* queue;
-    bool* no_more_input;
-    std::condition_variable* c_v;
-    int workers;
-    public:
-    Process_input(Command_queue* queue,
-                bool* no_more_input,
-                std::condition_variable* c_v,
-                int workers);
-    virtual void run() override;
-};
-
-class Process_commands : public Thread{
-    private:
-    SAC& split_apply_combine;
-    Command_queue* queue;
-    bool* no_more_input;
-    bool* finished; 
-    std::condition_variable* c_v;
-    std::mutex* m;
-    public:
-    Process_commands(SAC& split_apply_combine, Command_queue* queue,
-                    bool* no_more_input, bool* finished, 
-                    std::condition_variable* c_v, std::mutex* m);
-    virtual void run() override;
 };
 
 #endif
